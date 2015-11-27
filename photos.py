@@ -8,12 +8,14 @@ with open("client_info.txt", 'r') as f:
     client_secret= s[1].rstrip()
 
 api = InstagramAPI(access_token = access_token, client_secret=client_secret )
+dic = {}
 
-dic = {
-        '1507979106' : {"name" : "수지", "photos_url" : []},
-        '1985619235' : {"name" : "이민호", "photos_url" : []},
-        '1488355551' : {"name" : "이광수", "photos_url" : []},
-        }
+with open("userid_list.txt", 'r') as f:
+    p = f.readlines()
+
+for i in p:
+    user, name = i.split()[0], i.split()[1]
+    dic[user] = {"name" : name, "photos_url" : []}
 
 
 
