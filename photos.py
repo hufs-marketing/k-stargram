@@ -22,7 +22,10 @@ for i in p:
 for k in dic.keys():
     recent_media, next_ = api.user_recent_media(user_id = k)
     for media in recent_media:
-        dic[k]["photos_url"].append(media.images["standard_resolution"].url)
+        if media.caption:
+            dic[k]["photos_url"].append((media.images["standard_resolution"].url, media.caption))
+        else:
+            dic[k]["photos_url"].append((media.images["standard_resolution"].url, None))
 
 for k in dic.keys():
     print "*" * 50
