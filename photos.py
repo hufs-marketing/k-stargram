@@ -1,6 +1,11 @@
 #-*- coding:utf-8 -*-
 from instagram.client import InstagramAPI
 import sys
+import payload
+from oauth2client import client
+from googleapiclient import sample_tools
+import json
+from __future__ import print_function
 
 with open("client_info.txt", 'r') as f:
     s = f.readlines()
@@ -33,3 +38,12 @@ for k in dic.keys():
     for i in dic[k]["photos_url"]:
         print i 
 
+
+#payload : can make make_payload method
+def upload(payload):
+    service, flags = sample_tools.init(
+      argv, 'blogger', 'v3', __doc__, __file__,
+      scope='https://www.googleapis.com/auth/blogger')
+    posts = service.posts()
+    request = posts.insert(blogId="485055035283972076", body=payload, isDraft = True, fetchImages = True)
+    request.execute()
