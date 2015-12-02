@@ -16,10 +16,10 @@ def make_body(name, img_url, google_id, comment=" "):
             "title" : title,
             "kind": "blogger#post",
             "labels" : [
-                tag
-                ]
+                name
+                ],
             "images" : {
-                "url" : img_url
+                "url" : img_tag
                 }
             }
     return payload

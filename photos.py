@@ -5,7 +5,13 @@ import payload
 from oauth2client import client
 from googleapiclient import sample_tools
 import json
-from __future__ import print_function
+def upload(payload):
+    service, flags = sample_tools.init(
+      argv, 'blogger', 'v3', __doc__, __file__,
+      scope='https://www.googleapis.com/auth/blogger')
+    posts = service.posts()
+    request = posts.insert(blogId="485055035283972076", body=payload, isDraft = True, fetchImages = True)
+    request.execute()
 
 with open("client_info.txt", 'r') as f:
     s = f.readlines()
@@ -20,9 +26,8 @@ with open("userid_list.txt", 'r') as f:
 
 for i in p:
     user, name = i.split()[0], i.split()[1]
-    dic[user] = {"name" : name, "photos_url" : []}
-
-
+    label = i.split()[2]
+    dic[user] = {"name" : name,"label" : label, "photos_url" : []}
 
 for k in dic.keys():
     recent_media, next_ = api.user_recent_media(user_id = k)
@@ -33,17 +38,29 @@ for k in dic.keys():
             dic[k]["photos_url"].append((media.images["standard_resolution"].url, None))
 
 for k in dic.keys():
-    print "*" * 50
-    print dic[k]["name"]
-    for i in dic[k]["photos_url"]:
-        print i 
+    print ("*" * 50)
+    print (dic[k]["label"])
+    name = dic[k]["label"]
+    try:
+        with open("insta/"+name, 'r') as f:
+            pass
+    except Exception as e:
+        with open("insta/"+name, 'w') as f:
+            json.dump(dic[k], f, ensure_ascii=False)
+            continue
+        print (e)
+    with open("insta/" + name, 'r') as f:
+        a = json.loads(f,encoding ="utf-8")
 
-
-#payload : can make make_payload method
-def upload(payload):
-    service, flags = sample_tools.init(
-      argv, 'blogger', 'v3', __doc__, __file__,
-      scope='https://www.googleapis.com/auth/blogger')
-    posts = service.posts()
-    request = posts.insert(blogId="485055035283972076", body=payload, isDraft = True, fetchImages = True)
-    request.execute()
+    for pic in dic[k]["photos_url"] :
+        if pic not in a["photos_url"] : 
+            if pic is None:
+                payload = make_payload(dic[k]["label"], pic[0], "leesunkeuy2@gmail.com")
+            else:
+                payload = make_payload(dic[k]["label"], pic[0], "leesunkeuy2@gmail.com", comment = pic[1])
+            upload(payload)
+            a["photos_url"].append(pic)
+            if len(a["photos_url"]) >= 10:
+                a.pop()
+    with open("insta/" + name, 'w') as f:
+        json.dump(dic[k], f, ensure_ascii=False)
